@@ -24,6 +24,7 @@ namespace berry {
         number["min"] = this->min;
         number["max"] = this->max;
         number["step"] = this->step;
+        value["number"] = number;
 
         return value.dump();
     }

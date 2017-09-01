@@ -12,7 +12,7 @@ message(STATUS "Current project dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-set(CMAKE_CXX_FLAGS "-g --std=c++11 ")
+set(CMAKE_CXX_FLAGS "-g --std=c++11 -Wno-psabi")
 
 find_package(EV REQUIRED) 
 
