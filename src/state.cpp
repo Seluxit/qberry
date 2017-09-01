@@ -10,8 +10,8 @@ namespace berry {
 
     State::State(const std::shared_ptr<Value>& parent, const std::string& uuid, const std::shared_ptr<Gpio>& pin) : parent_(parent), pin_(pin), id(uuid) 
     {
-        // Watch if pin is for Reading
-        if (pin_->direction() == Direction::out) {
+        // Watch if pin is for Reading "in" should be for reading, "out" for controling
+        if (pin_->direction() == Direction::in) {
             wstate_.set<State, &State::callback>(this);       
             wstate_.start(pin_->value_path().c_str(), 0.);
         }
