@@ -106,7 +106,7 @@ namespace berry {
         auto pin17 = std::make_shared<berry::Gpio>(17, berry::Direction::out); 
         const std::string state_id = "a14416ea-2585-4f1f-bbdf-c41af40ed32f";
         auto state1 = std::shared_ptr<State>(new State(value1, state_id, pin17));
-        state1->timestamp = std::to_string(berry::timestamp()); 
+        state1->timestamp = berry::timestampToDateTime(berry::timestamp()); 
         state1->type = "Report";
         state1->data = "1";
 
@@ -132,7 +132,7 @@ namespace berry {
         const std::string state_id2 = "9e17d28c-a2df-401f-bcc7-27f307af01fd";
 
         auto state2 = std::shared_ptr<State>(new State(value2, state_id2, pin4));
-        state2->timestamp = std::to_string(berry::timestamp()); 
+        state2->timestamp = berry::timestampToDateTime(berry::timestamp()); 
         state2->type = "Control";
         state2->data = "0";
 
