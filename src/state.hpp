@@ -16,10 +16,8 @@ class State {
         std::shared_ptr<Value> parent_;
         std::shared_ptr<Gpio> pin_;
         
-        int intervalue_ = 100;
         ev::timer wstate_;
-
-        void callback(ev::timer& w, int revents);
+        void checkin(ev::timer& w, int revents);
 
     public:
         State(const std::shared_ptr<Value>& parent, const std::string& uuid, const std::shared_ptr<Gpio>& pin);

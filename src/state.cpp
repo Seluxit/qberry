@@ -12,12 +12,14 @@
 
 namespace berry {
     
-    State::State(const std::shared_ptr<Value>& parent, const std::string& uuid, const std::shared_ptr<Gpio>& pin) : parent_(parent), pin_(pin), id(uuid) 
+    State::State(const std::shared_ptr<Value>& parent, 
+                 const std::string& uuid, 
+                 const std::shared_ptr<Gpio>& pin) : parent_(parent), pin_(pin), id(uuid) 
     {
-        // Watch if pin is for Reading "in" should be for reading, "out" for controling
+        // Watch if pin is for Reading "in" should be for reading, "out" for controlling
         if (pin_->direction() == Direction::in) {
            
-            wstate_.set<State, &State::callback>(this);       
+            wstate_.set<State, &State::checkin>(this);       
             wstate_.start(.5, .5);
         }
     }
@@ -51,14 +53,11 @@ namespace berry {
     /**
      * Read
      */
-    void State::callback(ev::timer& w, int revents)
+    void State::checkin(ev::timer& w, int revents)
     {
-        std::string val = pin_->value();
-        if (intervalue_ != std::stoi(val)) {
-            intervalue_ = std::stoi(val);
-            this->data = val; 
-
-            std::cout << "Value changed! " << intervalue_ << "\n";
+        std::string value = pin_->value();
+        if (this->data != value) {
+            this->data = value; 
             auto reactor = Reactor::instance();
             reactor->post(this);
         }
