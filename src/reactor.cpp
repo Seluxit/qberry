@@ -204,6 +204,10 @@ namespace berry {
                 ss <<  R"({"jsonrpc": "2.0", "result": true, id": ")" << msgId;
                 ss << R"("})"; 
                 std::cout << "Set Value: " << data << "\n"; 
+
+                std::string ret = ss.str();
+                std::cout << "Return " << ret << "\n";
+
                 write(ss.str());
 
                 (*it)->set(data);

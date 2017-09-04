@@ -16,8 +16,13 @@ class State {
         std::shared_ptr<Value> parent_;
         
         std::shared_ptr<Gpio> pin_;
-        ev::stat wstate_;
-        void callback(ev::stat& w, int revents);
+        
+        unsigned int intervalue_;
+
+        ev::async wstate_;
+        void callback(ev::async& w, int revents);
+        int wait_interrupt(unsigned int* val);
+        void interrupt_handler();
 
     public:
         State(const std::shared_ptr<Value>& parent, const std::string& uuid, const std::shared_ptr<Gpio>& pin);
