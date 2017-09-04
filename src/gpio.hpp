@@ -15,6 +15,9 @@ class Gpio
         std::string export_path_ = "/sys/class/gpio/export";
         std::string unexport_path_ = "/sys/class/gpio/unexport";
         std::string root_path_ = "/sys/class/gpio/gpio";
+    
+        void export_pin(int number);
+        void set_direction(Direction dir);
 
 	public:
 		Gpio(int x, Direction dir); 

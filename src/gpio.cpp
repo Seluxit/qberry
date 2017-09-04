@@ -2,39 +2,51 @@
 #include <fstream>
 #include <iostream>
 #include "error.hpp"
+#include <unistd.h>
+#include <fcntl.h>
 
 namespace berry {
 
     Gpio::Gpio(int number, Direction dir) : number_(number), direction_(dir)
     {
-        std::ofstream numstream;
-        numstream.open(export_path_.c_str(), std::ios::out);
-        if (!numstream) {
-            throw error_t("Can NOT open file: " + export_path_);
-        }        
-        
-        numstream << std::to_string(number);        
-        numstream.close();        
-        
-        std::ofstream dirstream;
-        std::string direction_path = root_path_ + std::to_string(number_) + "/direction";
-        dirstream.open(direction_path.c_str(), std::ios::out); 
- 
-        if (!dirstream) {
-            throw error_t("Can NOT open file: " + direction_path);
-        }           
-        
-        dirstream << (Direction::in == direction_ ? "in" : "out"); 
-        dirstream.close();        
+        export_pin(number_);
+        set_direction(direction_);
     }
     
     Gpio::~Gpio()
     {
-        std::ofstream unstream(unexport_path_.c_str(), std::ios::out);
-        if (unstream) {
-            unstream << std::to_string(number_);
-            unstream.close();
+        std::string pin_number = std::to_string(number_);
+
+        int fd = open(unexport_path_.c_str(), O_WRONLY);
+        if (fd > 0) {
+            write(fd, pin_number.c_str(), pin_number.size());
+            close(fd);
         }
+    }
+    
+    void Gpio::export_pin(int number) 
+    {
+        int fd = open(export_path_.c_str(), O_WRONLY);
+        if (fd < 0) {
+            throw error_t("Can NOT open file: " + export_path_);
+        }
+
+        std::string pin_number = std::to_string(number);
+        write(fd, pin_number.c_str(), pin_number.size());
+        close(fd);
+    }
+    
+    void Gpio::set_direction(Direction dir)
+    {
+        std::string direction_path = root_path_ + std::to_string(number_) + "/direction";
+        int fd = open(direction_path.c_str(), O_WRONLY);
+        if (fd < 0) {
+           throw error_t("Can NOT open file: " + direction_path); 
+        }
+
+        std::string direction = (Direction::in == dir ? "in" : "out");
+        write(fd, direction.c_str(), direction.size());
+        close(fd);
     }
 
     bool Gpio::value(const std::string& val)
