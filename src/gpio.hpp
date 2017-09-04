@@ -18,7 +18,7 @@ class Gpio
     
         void export_pin(int number);
         void set_direction(Direction dir);
-
+        void set_edge(const std::string& edge);
 	public:
 		Gpio(int x, Direction dir); 
 		~Gpio();		

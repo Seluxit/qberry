@@ -30,12 +30,12 @@ namespace berry {
 
     void Reactor::init()
     {
-		fdescriptor_ = create_socket();
+	fdescriptor_ = create_socket();
 		
         wconnection_.set(fdescriptor_, ev::READ);
         wconnection_.set<Reactor, &Reactor::socket_callback>(this);
         wconnection_.start();
-        
+
         load_elements();
 		// Send network UUID to the data collector.
     }

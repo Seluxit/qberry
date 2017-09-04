@@ -11,6 +11,7 @@ namespace berry {
     {
         export_pin(number_);
         set_direction(direction_);
+        set_edge("rising");
     }
     
     Gpio::~Gpio()
@@ -48,6 +49,19 @@ namespace berry {
         write(fd, direction.c_str(), direction.size());
         close(fd);
     }
+    
+    void Gpio::set_edge(const std::string& edge)
+    {
+        std::string edge_path = root_path_ + std::to_string(number_) + "/edge";
+        int fd = open(edge_path.c_str(), O_WRONLY);
+        if (fd < 0) {
+           throw error_t("Can NOT open file: " + edge_path); 
+        }
+        
+        write(fd, edge_path.c_str(), edge_path.size());
+        close(fd);
+    }
+
 
     bool Gpio::value(const std::string& val)
     {
