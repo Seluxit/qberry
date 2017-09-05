@@ -4,7 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include "error.hpp"
-
+#include "path.hpp"
+#include "reactor.hpp"
 
 namespace berry {
     
@@ -12,7 +13,16 @@ namespace berry {
 
     Network::Network(const std::string& uuid) : id(uuid)
     {
-
+        Path path(this->location() + this->id + "/device");
+        while (path.directory() != path.dirs_end()) {
+            
+            /*
+             *auto device = std::make_shared<Device>(this, *path.directory());
+             *auto reactor = Reactor::instance();
+             *reactor->devices.push_back(device);
+             *path.directory()++;
+             */
+        }
     }
         
     std::string Network::location() const
@@ -30,4 +40,8 @@ namespace berry {
         return value.dump();
     }
 
+    void Network::fromJson(const json& value)
+    {
+
+    }
 } // namespace qplus

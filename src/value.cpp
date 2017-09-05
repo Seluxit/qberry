@@ -2,12 +2,28 @@
 #include "device.hpp"
 #include <string>
 #include <iostream>
+#include "utils.hpp"
+#include "path.hpp"
+#include "reactor.hpp"
 
 namespace berry {
 
     Value::Value(const std::shared_ptr<Device>& parent, const std::string& uuid) : parent_(parent), id(uuid)
     {
+        std::string filename = this->location() + this->id + "/value.json";
+        deserialize(filename, *this);
 
+        // check if there is a values
+        Path path(this->location() + this->id + "/state");
+        while (path.directory() != path.dirs_end()) {
+            
+            /*
+             *auto state = std::make_shared<State>(this, *path.directory());
+             *auto reactor = Reactor::instance();
+             *reactor->states.push_back(state);
+             *path.directory()++;
+             */
+        }
     }
 
     std::string Value::toJson() const

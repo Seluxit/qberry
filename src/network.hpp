@@ -14,13 +14,12 @@ class Network {
     public:
         Network(const std::string& uuid);
         std::string toJson() const;
+        void fromJson(const json& value);
     
         std::string location() const;
 
-        // ----
-        std::unique_ptr<Device> device_;
         std::string id; 
-        const std::string name = "Seluxit fatek";
+        const std::string name;
 };
 
 

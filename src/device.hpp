@@ -36,7 +36,7 @@ class Device {
 
         std::string location() const;
         std::string toJson() const; 
-        //void fromJson(const json& value);
+        void fromJson(const json& value);
 };
 
 } // namespace qplus

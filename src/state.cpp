@@ -5,10 +5,6 @@
 #include <iostream>
 #include <thread>
 #include "reactor.hpp"
-#include <fcntl.h>
-#include <poll.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
 
 namespace berry {
     
@@ -16,6 +12,10 @@ namespace berry {
                  const std::string& uuid, 
                  const std::shared_ptr<Gpio>& pin) : parent_(parent), pin_(pin), id(uuid) 
     {
+        
+        std::string filename = this->location() + this->id + "/state.json";
+        deserialize(filename, *this);
+
         // Watch if pin is for Reading "in" should be for reading, "out" for controlling
         if (pin_->direction() == Direction::in) {
            

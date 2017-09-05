@@ -1,4 +1,7 @@
+#include "configuration.hpp"
+#include "path.hpp"
 #include <iostream>
+#include <cassert>
 #include "reactor.hpp"
 #include "network.hpp"
 #include "utils.hpp"
@@ -7,6 +10,9 @@
 
 int main()
 {
+    Conf_t conf = readConfiguration();
+    berry::Path path(conf.QBERRY_PATH + "/network");
+    assert(path.directory() != path.dirs_end()); 
 
     auto reactor = berry::Reactor::instance();
     reactor->init();

@@ -38,7 +38,7 @@ class Reactor
         void init();
         
         std::shared_ptr<Network> network;
-        std::shared_ptr<Device> device;
+        std::vector<std::shared_ptr<Device>> devices;
         std::vector<std::shared_ptr<Value>> values;
         std::vector<std::shared_ptr<State>> states;
 

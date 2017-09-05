@@ -1,0 +1,35 @@
+#pragma once
+
+#include <fstream>
+#include <string>
+#include "json.hpp" 
+#include "error.hpp"
+
+using json = nlohmann::json;
+
+typedef struct Conf {
+    
+    std::string QBERRY_CONF;
+    std::string QBERRY_PATH;
+    std::string SERVER;
+} Conf_t;
+
+static Conf_t readConfiguration()
+{
+    Conf_t conf;
+    conf.QBERRY_CONF = "${QBERRY_CONF}";
+    conf.QBERRY_PATH   = "${QBERRY_PATH}";
+
+    std::ifstream is(conf.QBERRY_CONF.c_str()); 
+    if (!is.good()) {
+        throw berry::error_t("Can't open configuration file: " + conf.QBERRY_CONF);
+    }
+   
+    json object_json;
+    is >> object_json;
+    
+    conf.SERVER = object_json["SERVER"].get<std::string>();
+
+    return conf;
+}
+

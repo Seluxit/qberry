@@ -5,7 +5,6 @@
 #include "state.hpp"
 #include "json.hpp"
 
-
 namespace berry {
     
 using json = nlohmann::json;
@@ -28,7 +27,6 @@ class Value {
         double max;
         double step;
         
-
         std::string location() const;
         std::string toJson() const;
         void fromJson(const json& value);
