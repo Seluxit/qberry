@@ -13,18 +13,16 @@ namespace berry {
 
     Network::Network(const std::string& uuid) : id(uuid)
     {
-        Path path(this->location() + this->id + "/device");
+        auto reactor = Reactor::instance();
+        Path path(reactor->configuration().QBERRY_PATH + this->location() + this->id + "/device");
+
         while (path.directory() != path.dirs_end()) {
-            
-            /*
-             *auto device = std::make_shared<Device>(this, *path.directory());
-             *auto reactor = Reactor::instance();
-             *reactor->devices.push_back(device);
-             *path.directory()++;
-             */
+            auto device = std::make_shared<Device>(this, *path.directory());
+            reactor->devices.push_back(device);
+            path.directory()++;
         }
     }
-        
+   
     std::string Network::location() const
     {
         return "/network/"; 

@@ -13,20 +13,21 @@ class Value;
 class State {
 
     private:
-        std::shared_ptr<Value> parent_;
+        const Value* parent_;
         std::shared_ptr<Gpio> pin_;
         
         ev::timer wstate_;
         void checkin(ev::timer& w, int revents);
 
     public:
-        State(const std::shared_ptr<Value>& parent, const std::string& uuid, const std::shared_ptr<Gpio>& pin);
+        State(const Value* parent, const std::string& uuid);
         
         // ------
         std::string id;
         std::string type;
         std::string timestamp;
         std::string data;
+        int pin;
         
         std::string location() const;
         std::string toJson() const;

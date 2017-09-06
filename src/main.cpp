@@ -12,10 +12,16 @@ int main()
 {
     Conf_t conf = readConfiguration();
     berry::Path path(conf.QBERRY_PATH + "/network");
-    assert(path.directory() != path.dirs_end()); 
+    
+    if(path.directory() == path.dirs_end()) {
+        std::cout << "Probably application do not have any data. Check 'network' directory\n";
+        return -1;
+    }
+    
+    std::string network_uuid = *path.directory();
 
     auto reactor = berry::Reactor::instance();
-    reactor->init();
+    reactor->init(conf, network_uuid);
 
    
 

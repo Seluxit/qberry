@@ -8,21 +8,21 @@
 
 namespace berry {
 
-    Value::Value(const std::shared_ptr<Device>& parent, const std::string& uuid) : parent_(parent), id(uuid)
+    Value::Value(const Device* parent, const std::string& uuid) : parent_(parent), id(uuid)
     {
-        std::string filename = this->location() + this->id + "/value.json";
+        auto reactor = Reactor::instance();
+        std::string root_path = reactor->configuration().QBERRY_PATH; 
+
+        std::string filename = root_path + this->location() + this->id + "/value.json";
         deserialize(filename, *this);
 
         // check if there is a values
-        Path path(this->location() + this->id + "/state");
+        Path path(root_path + this->location() + this->id + "/state");
         while (path.directory() != path.dirs_end()) {
             
-            /*
-             *auto state = std::make_shared<State>(this, *path.directory());
-             *auto reactor = Reactor::instance();
-             *reactor->states.push_back(state);
-             *path.directory()++;
-             */
+            auto state = std::make_shared<State>(this, *path.directory());
+            reactor->states.push_back(state);
+            path.directory()++;
         }
     }
 
@@ -47,7 +47,7 @@ namespace berry {
 
     void Value::fromJson(const json& value)
     {
-        this->id = value["id"].get<std::string>() ;
+        this->id = value[":id"].get<std::string>() ;
         this->name = value["name"].get<std::string>(); 
         this->permission = value["permission"].get<std::string>();
         this->type = value["type"].get<std::string>();

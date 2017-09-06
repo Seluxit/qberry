@@ -4,7 +4,9 @@
 #include <ev++.h>
 #include <memory>
 #include <iostream>
+#include <tuple>
 #include "utils.hpp"
+#include "configuration.hpp"
 
 namespace berry {
 
@@ -21,22 +23,23 @@ class Reactor
         Reactor(const Reactor&) = delete;
         Reactor& operator=(const Reactor&) = delete;
 
-
         ev::io wconnection_;
         ev::default_loop loop_;
         
         int fdescriptor_ = 0;
-		std::string hostname_ = "localhost";		
-		int port_ = 21004;
+        Conf_t conf_;
 
+        std::tuple<std::string, int> hostname_and_port(const std::string& url);
+    	int create_socket(const std::string& hostname, int port);
         void socket_callback(ev::io& w, int revents);
-    	int create_socket();
-        void load_elements();
+        void load_elements(const std::string& network_uuid);
 
     public:
         static Reactor* instance();
-        void init();
+        void init(const Conf_t& conf, const std::string& network_uuid);
         
+        const Conf_t& configuration();
+
         std::shared_ptr<Network> network;
         std::vector<std::shared_ptr<Device>> devices;
         std::vector<std::shared_ptr<Value>> values;
@@ -59,7 +62,6 @@ class Reactor
             std::cout << response << "\n";
             std::cout << "\n";
         }
-
 };
 
 } // namespace

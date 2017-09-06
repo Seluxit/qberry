@@ -28,19 +28,51 @@ namespace berry {
 
     }
 
-    void Reactor::init()
+    void Reactor::init(const Conf_t& conf, const std::string& network_uuid)
     {
-	fdescriptor_ = create_socket();
+        conf_ = conf;
+        
+        std::string hostname;
+        int port;
+        std::tie(hostname, port) = hostname_and_port(conf_.SERVER);
+
+	    fdescriptor_ = create_socket(hostname, port);
 		
         wconnection_.set(fdescriptor_, ev::READ);
         wconnection_.set<Reactor, &Reactor::socket_callback>(this);
         wconnection_.start();
-
-        load_elements();
-		// Send network UUID to the data collector.
+        
+        load_elements(network_uuid);
     }
     
-    int Reactor::create_socket() 
+    const Conf_t& Reactor::configuration()
+    {
+        return conf_;
+    }
+    
+    std::tuple<std::string, int> Reactor::hostname_and_port(const std::string& url)
+    {
+        std::string hostname = url;
+       
+        // remove protocol -
+        std::string::size_type pos = hostname.find("://");
+        if (pos != std::string::npos)
+            hostname = hostname.substr(pos+3);            
+
+        if (hostname.back() == '/')           
+            hostname.pop_back();
+        
+        pos = hostname.find(":");
+        std::string portnum = hostname.substr(pos+1);
+        hostname = hostname.substr(0,pos);
+
+        if (portnum.back() == '/')
+            portnum.pop_back();
+        
+        return std::make_tuple(hostname, std::stoi(portnum));
+    }
+
+    int Reactor::create_socket(const std::string& hostname, int port) 
     {
         int sockfd;
         char* tmp_ptr = NULL;
@@ -48,8 +80,8 @@ namespace berry {
         struct sockaddr_in dest_addr;
 
         // Extract hostname and port from url 'https://example.com:12345'
-        if ( (host = gethostbyname(hostname_.c_str())) == NULL ) {
-            std::cerr << "Error: Cannot resolve hostname " <<  hostname_ << "\n";
+        if ( (host = gethostbyname(hostname.c_str())) == NULL ) {
+            std::cerr << "Error: Cannot resolve hostname " <<  hostname << "\n";
             return 0;
         }
 
@@ -57,7 +89,7 @@ namespace berry {
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
         dest_addr.sin_family=AF_INET;
-        dest_addr.sin_port=htons(port_);
+        dest_addr.sin_port=htons(port);
         dest_addr.sin_addr.s_addr = *(long*)(host->h_addr);
 
         /* ---------------------------------------------------------- *
@@ -70,80 +102,32 @@ namespace berry {
         * Try to make the host connect here                          *
         * ---------------------------------------------------------- */
         if ( ::connect(sockfd, (struct sockaddr *) &dest_addr, sizeof(struct sockaddr)) == -1 ) {
-            std::cerr << "Error: Cannot connect to host " << hostname_ << "  on port " <<  port_ << "\n";
+            std::cerr << "Error: Cannot connect to host " << hostname << "  on port " <<  port << "\n";
             return 0;
         }
 
         return sockfd;
     }
     
-    void Reactor::load_elements()
+    void Reactor::load_elements(const std::string& network_uuid)
     {
+        // Loading all data recursively.
+        network = std::make_shared<Network>(network_uuid); 
+
         std::cout << "\n";
         std::cout << "------------- Sending all data to Q server -----------------\n";
         std::cout << "\n";
-
-/*
- *        const std::string net_id = "01b58e53-ea40-4b28-9a5d-dd824e9333c2";
- *        network = std::shared_ptr<Network>(new Network(net_id)); 
- *        this->post(network);
- *
- *        const std::string dev_id = "01eb0f96-ecaf-4ae2-a677-13ee87d6b376";
- *        device = std::shared_ptr<Device>(new Device(network, dev_id));
- *        this->post(device);
- *
- *        // --------------------- Value 1 -------------------------
- *        const std::string val_id = "b71b9a80-dd26-4bdd-9fd8-d34df85e730f";
- *        auto value1 = std::shared_ptr<Value>(new Value(device, val_id));
- *
- *        value1->permission = "r";
- *        value1->name = "Switch";
- *        value1->type = "Switch state";
- *        value1->min = 0;
- *        value1->max = 1;
- *        value1->step = 1;
- *
- *        // ------------------ State 1 ----------------------------------
- *        auto pin17 = std::make_shared<berry::Gpio>(17, berry::Direction::in); 
- *        const std::string state_id = "a14416ea-2585-4f1f-bbdf-c41af40ed32f";
- *        auto state1 = std::shared_ptr<State>(new State(value1, state_id, pin17));
- *        state1->timestamp = berry::timestampToDateTime(berry::timestamp()); 
- *        state1->type = "Report";
- *        state1->data = "1";
- *
- *        this->values.push_back(value1);
- *        this->states.push_back(state1);
- *        this->post(value1);
- *        this->post(state1);
- *
- *
- *        // --------------------- Value 2 -------------------------
- *        const std::string val_id2 = "2fafd810-85ff-4468-9758-9c0ab22592ca";
- *        auto value2 = std::shared_ptr<Value>(new Value(device, val_id2));
- *
- *        value2->permission = "w";
- *        value2->name = "LED";
- *        value2->type = "LED state";
- *        value2->min = 0;
- *        value2->max = 1;
- *        value2->step = 1;
- *    
- *        // --------------------- State 2 -------------------------
- *        auto pin4 = std::make_shared<berry::Gpio>(4, berry::Direction::out); 
- *        const std::string state_id2 = "9e17d28c-a2df-401f-bcc7-27f307af01fd";
- *
- *        auto state2 = std::shared_ptr<State>(new State(value2, state_id2, pin4));
- *        state2->timestamp = berry::timestampToDateTime(berry::timestamp()); 
- *        state2->type = "Control";
- *        state2->data = "0";
- *
- *
- *        this->values.push_back(value2);
- *        this->states.push_back(state2);
- *        this->post(value2);
- *        this->post(state2);
- */
-       
+ 
+        this->post(network);
+        for (const auto& device : this->devices) {
+            post(device);
+            for (const auto& value : this->values) {
+                post(value);
+                for (const auto& state : this->states) {
+                    post(state);
+                }
+            }
+        }
     }
 
     void Reactor::socket_callback(ev::io& w, int revents)
@@ -151,6 +135,8 @@ namespace berry {
         std::string msg = read();
         if (msg[0] =='\0' && msg.size() == BUF_SIZE) {
             std::cout << "Are server down? Re-connect\n";
+            wconnection_.stop();
+            // TODO --- timeout
             return; 
         }
     
@@ -237,10 +223,6 @@ namespace berry {
         return message;
     }
     
-
-
-    //bool Reactor::post
-
     ev::default_loop& Reactor::defaultLoop()
     {
         return loop_;

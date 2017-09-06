@@ -13,10 +13,10 @@ class Device;
 class Value {
 
     private:
-        std::shared_ptr<Device> parent_;
+        const Device* parent_;
 
     public:
-        Value(const std::shared_ptr<Device>& parent, const std::string& uuid);
+        Value(const Device* parent, const std::string& uuid);
         
         // ------
         std::string id;

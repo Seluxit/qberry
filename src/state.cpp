@@ -8,19 +8,28 @@
 
 namespace berry {
     
-    State::State(const std::shared_ptr<Value>& parent, 
-                 const std::string& uuid, 
-                 const std::shared_ptr<Gpio>& pin) : parent_(parent), pin_(pin), id(uuid) 
+    State::State(const Value* parent, const std::string& uuid) : parent_(parent), id(uuid) 
     {
-        
-        std::string filename = this->location() + this->id + "/state.json";
+        auto reactor = Reactor::instance();
+        std::string root_path = reactor->configuration().QBERRY_PATH; 
+       
+        std::string filename = root_path + this->location() + this->id + "/state.json";
         deserialize(filename, *this);
+        
+        Direction dir = (this->type == "Report") ? Direction::out : Direction::in;
 
-        // Watch if pin is for Reading "in" should be for reading, "out" for controlling
-        if (pin_->direction() == Direction::in) {
-           
-            wstate_.set<State, &State::checkin>(this);       
-            wstate_.start(.5, .5);
+        try {
+            pin_ = std::make_shared<berry::Gpio>(this->pin, dir); 
+            // Watch if pin is for Reading "in" should be for reading, "out" for controlling
+            if (pin_->direction() == Direction::in) {
+                wstate_.set<State, &State::checkin>(this);       
+                wstate_.start(.5, .5);
+            }
+        }
+        catch(std::exception& e) {
+            std::cerr << "\n";
+            std::cerr << "ONLY for test " << e.what() << "\n";
+            std::cerr << "\n";
         }
     }
 
@@ -39,10 +48,13 @@ namespace berry {
 
     void State::fromJson(const json& value)
     {
-        this->id = value["id"].get<std::string>() ;
+        this->id = value[":id"].get<std::string>() ;
         this->data = value["data"].get<std::string>(); 
-        this->timestamp = value["timestamp"].get<std::string>();
+        if (value.find("timestamp") != value.end())
+            this->timestamp = value["timestamp"].get<std::string>();
         this->type = value["type"].get<std::string>();
+        // asociate every statte with pin.
+        this->pin = value["pin"].get<int>();
     }
 
     std::string State::location() const
@@ -68,7 +80,11 @@ namespace berry {
      */
     void State::set(const std::string& data)
     {
-        pin_->value(data);
+        if (pin_)
+            pin_->value(data);
+        else {
+            std::cerr << "Can NOT set data to pin. Pin is invalid!\n";
+        }
     }
 
 } // namespace 
