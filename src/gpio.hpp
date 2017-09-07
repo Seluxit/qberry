@@ -29,6 +29,8 @@ class Gpio
 
 		int number();
 		Direction direction();
+
+        void unexport_pin();
 };
 
 } // namespace

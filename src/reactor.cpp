@@ -36,8 +36,11 @@ namespace berry {
         int port;
         std::tie(hostname, port) = hostname_and_port(conf_.SERVER);
 
+        break_.set<Reactor, &Reactor::break_callback>(this);
+        break_.start(SIGINT);
+
 	    fdescriptor_ = create_socket(hostname, port);
-		
+
         wconnection_.set(fdescriptor_, ev::READ);
         wconnection_.set<Reactor, &Reactor::socket_callback>(this);
         wconnection_.start();
@@ -45,6 +48,16 @@ namespace berry {
         load_elements(network_uuid);
     }
     
+    void Reactor::break_callback(ev::sig& signal, int revent)
+    {
+        for (auto& state : states) {
+            state->unexport_pin();
+        }
+
+        signal.loop.break_loop();
+        std::cout << "\nYou are killing Me! Who gave you such rights?\n";
+    }
+
     const Conf_t& Reactor::configuration()
     {
         return conf_;

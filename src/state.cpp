@@ -16,7 +16,10 @@ namespace berry {
         std::string filename = root_path + this->location() + this->id + "/state.json";
         deserialize(filename, *this);
         
-        Direction dir = (this->type == "Report") ? Direction::out : Direction::in;
+        Direction dir = (this->type == "Report") ? Direction::in : Direction::out;
+        
+        // clean the pin state - unexport
+        unexport_pin();
 
         try {
             pin_ = std::make_shared<berry::Gpio>(this->pin, dir); 
@@ -28,7 +31,7 @@ namespace berry {
         }
         catch(std::exception& e) {
             std::cerr << "\n";
-            std::cerr << "ONLY for test " << e.what() << "\n";
+            std::cerr << "Error: " << e.what() << "\n";
             std::cerr << "\n";
         }
     }
@@ -83,5 +86,10 @@ namespace berry {
             std::cerr << "Can NOT set data to pin. Pin is invalid!\n";
         }
     }
-
+    
+    void State::unexport_pin()
+    {
+        if (pin_)
+            pin_->unexport_pin();
+    }
 } // namespace 

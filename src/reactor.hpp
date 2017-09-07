@@ -23,6 +23,7 @@ class Reactor
         Reactor(const Reactor&) = delete;
         Reactor& operator=(const Reactor&) = delete;
 
+        ev::sig break_;
         ev::io wconnection_;
         ev::default_loop loop_;
         
@@ -32,6 +33,7 @@ class Reactor
         std::tuple<std::string, int> hostname_and_port(const std::string& url);
     	int create_socket(const std::string& hostname, int port);
         void socket_callback(ev::io& w, int revents);
+        void break_callback(ev::sig& w, int revent);
         void load_elements(const std::string& network_uuid);
 
     public:

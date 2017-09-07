@@ -16,15 +16,21 @@ namespace berry {
     
     Gpio::~Gpio()
     {
+        std::cout << "Calling GPIO destructor\n\n";
+        unexport_pin();
+    }
+    
+    void Gpio::unexport_pin()
+    {
+        std::cout << "UnExport pin: " << number_ << "\n";
         std::string pin_number = std::to_string(number_);
-
         int fd = open(unexport_path_.c_str(), O_WRONLY);
         if (fd > 0) {
             write(fd, pin_number.c_str(), pin_number.size());
             close(fd);
         }
     }
-    
+
     void Gpio::export_pin(int number) 
     {
         int fd = open(export_path_.c_str(), O_WRONLY);

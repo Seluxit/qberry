@@ -34,6 +34,7 @@ class State {
         void fromJson(const json& value);
 
         void set(const std::string& data);
+        void unexport_pin();
 };
 
 } // namespace
