@@ -52,9 +52,10 @@ class Reactor
         ev::default_loop& defaultLoop();
 
         template<typename T>
-        void post(const T& object)
+        void send(const std::string& method, const T& object)
         {
-            std::string payload = jsonRpc("POST", object->toJson(), object->location());
+            assert(method == "POST" || method == "PUT"); 
+            std::string payload = jsonRpc(method, object->toJson(), object->location());
             write(payload);            
             
             std::cout << payload << "\n\n";

@@ -131,13 +131,13 @@ namespace berry {
         std::cout << "------------- Sending all data to Q server -----------------\n";
         std::cout << "\n";
  
-        this->post(network);
+        this->send("POST", network);
         for (const auto& device : this->devices) {
-            post(device);
+            send("POST", device);
             for (const auto& value : this->values) {
-                post(value);
+                send("POST", value);
                 for (const auto& state : this->states) {
-                    post(state);
+                    send("POST", state);
                 }
             }
         }

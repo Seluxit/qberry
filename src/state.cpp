@@ -71,7 +71,7 @@ namespace berry {
         if (this->data != value) {
             this->data = value; 
             auto reactor = Reactor::instance();
-            reactor->post(this);
+            reactor->send("PUT", this);
         }
     }
     
