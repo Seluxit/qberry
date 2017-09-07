@@ -201,7 +201,7 @@ namespace berry {
             }
             else {
                 std::string data = root["params"]["data"]["data"].get<std::string>();
-                ss <<  R"({"jsonrpc": "2.0", "result": true, id": ")" << msgId;
+                ss <<  R"({"jsonrpc": "2.0", "result": true, "id": ")" << msgId;
                 ss << R"("})"; 
                 std::cout << "Set Value: " << data << "\n"; 
 
