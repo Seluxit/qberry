@@ -55,7 +55,14 @@ class Reactor
         void send(const std::string& method, const T& object)
         {
             assert(method == "POST" || method == "PUT"); 
-            std::string payload = jsonRpc(method, object->toJson(), object->location());
+
+            std::string url;
+            if (method == "PUT")
+                url = object->location() + object->id;
+            else // POST
+                url = object->location();
+
+            std::string payload = jsonRpc(method, object->toJson(), url);
             write(payload);            
             
             std::cout << payload << "\n\n";
