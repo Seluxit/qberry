@@ -134,12 +134,12 @@ namespace berry {
         this->send("POST", network);
         for (const auto& device : this->devices) {
             send("POST", device);
-            for (const auto& value : this->values) {
-                send("POST", value);
-                for (const auto& state : this->states) {
-                    send("POST", state);
-                }
-            }
+        }
+        for (const auto& value : this->values) {
+            send("POST", value);
+        }
+        for (const auto& state : this->states) {
+            send("POST", state);
         }
     }
 
