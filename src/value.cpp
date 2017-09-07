@@ -37,9 +37,9 @@ namespace berry {
         value["type"] = this->type;
 
         json number;
-        number["min"] = this->min;
-        number["max"] = this->max;
-        number["step"] = this->step;
+        number["min"] = std::to_string(this->min);
+        number["max"] = std::to_string(this->max);
+        number["step"] = std::to_string(this->step);
         value["number"] = number;
 
         return value.dump();

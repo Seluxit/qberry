@@ -40,7 +40,7 @@ namespace berry {
         value[":type"] = "urn:seluxit:xml:bastard:state-1.1";
         value[":id"] = this->id;
         value["data"] = this->data;
-        value["timestamp"] = this->timestamp;
+        value["timestamp"] = timestampToDateTime(berry::timestamp());
         value["type"] = this->type;
 
         return value.dump();
@@ -50,10 +50,7 @@ namespace berry {
     {
         this->id = value[":id"].get<std::string>() ;
         this->data = value["data"].get<std::string>(); 
-        if (value.find("timestamp") != value.end())
-            this->timestamp = value["timestamp"].get<std::string>();
         this->type = value["type"].get<std::string>();
-        // asociate every statte with pin.
         this->pin = value["pin"].get<int>();
     }
 

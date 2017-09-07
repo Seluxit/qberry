@@ -76,9 +76,9 @@ new_value()
         \"name\": \"${value_name}\",
         \"permission\": \"${permission}\",
         \"type\": \"${value_type}\",
-        \"min\": \"${min}\",
-        \"max\": \"${max}\",
-        \"step\": \"${step}\"
+        \"min\": ${min},
+        \"max\": ${max},
+        \"step\": ${step}
     }" >> ${value_dir}/value.json
 
     value=`cat ${value_dir}/value.json`
@@ -112,9 +112,8 @@ new_state()
     echo -e "{ 
         \":id\": \"${state_uuid}\",
         \"type\": \"${control_type}\",
-        \"pin\": \"${pin}\",
-        \"timestamp\": \"${now}\",
-        \"data\": \"${data}\"
+        \"pin\": ${pin},
+        \"data\": ${data}
     }" >> ${state_dir}/state.json
 
     state=`cat ${state_dir}/state.json`
