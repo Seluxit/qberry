@@ -179,11 +179,10 @@ namespace berry {
         std::string msgId = root.at("id").get<std::string>();
 
         // check first for error message.
-        if (root.find("method") != root.end() ) {
+        if (root.find("method") != root.end() && root["method"].get<std::string>() == "PUT") {
             
-            std::string method = root["method"].get<std::string>();
+            //std::string method = root["method"].get<std::string>();
             std::string url = root["params"]["url"].get<std::string>();
-
             std::string id = root["params"]["data"][":id"].get<std::string>();
 
             auto it = std::find_if(states.begin(), states.end(), 
@@ -194,9 +193,9 @@ namespace berry {
             
             std::stringstream ss;
             if (it == states.end()) {
-                ss <<  R"({"jsonrpc": "2.0", "result": false, id": ")" << msgId;
+                ss <<  R"({"jsonrpc": "2.0", "result": false, "id": ")" << msgId;
                 ss << R"("})"; 
-                std::cout << "No such State ID: " << id << "\n"; 
+                std::cout << "No such State with ID: " << id << "\n"; 
                 write(ss.str());
 
             }
@@ -214,6 +213,17 @@ namespace berry {
                 (*it)->set(data);
             }
         }
+        else {
+            std::string ajson = R"({
+                    "jsonrpc": "2.0", 
+                    "result": false, 
+                    "id": "Unknown" 
+                    })";
+
+            std::cout << ajson << "\n"; 
+            write(ajson);
+        }
+        
     }
 
     void Reactor::write(const std::string& msg) const
