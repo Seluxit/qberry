@@ -35,7 +35,7 @@ Run './configure' for configuration and 'make' to build the QBerry.
 Once build is finished it should produce `qberry` executable. Executable will read 'network' directory structure with all
 devices, values and states, wrap such data in json format and send to [data pipe][pipe] and [rest service][rest]. Those
 services can be run on local Rastberry Pi or on a remote machine.
-Application It also will listen on event from 'data pipe' server for controlling/updating states. 
+Application It also will listen on event from [data pipe][pipe] for controlling/updating states. 
 Use [Postman][postman-com] or other REST clients to read/control device state.
 
 [postman-com]: https://www.getpostman.com/
