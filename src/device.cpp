@@ -27,16 +27,24 @@ namespace berry {
         json value;
 
         value[":type"] = "urn:seluxit:xml:bastard:device-1.1";
-        
         value[":id"] = this->id;
-        value["name"] = this->name;
-        value["manufacturer"] = this->manufacturer;
-        value["product"] = this->product;
-        value["version"] = this->version;
-        value["serial"] = this->serial;
-        value["protocol"] = this->protocol;
-        value["communication"] = this->communication;
-        value["included"] = this->included;
+
+        if (!this->name.empty())
+            value["name"] = this->name;
+        if (!this->manufacturer.empty())
+            value["manufacturer"] = this->manufacturer;
+        if (!this->product.empty())
+            value["product"] = this->product;
+        if (!this->product.empty())
+            value["version"] = this->version;
+        if (!this->serial.empty())
+            value["serial"] = this->serial;
+        if (!this->protocol.empty())
+            value["protocol"] = this->protocol;
+        if (!this->communication.empty())
+            value["communication"] = this->communication;
+        if (!this->included.empty())
+            value["included"] = this->included;
         
         return value.dump();
     }

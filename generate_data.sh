@@ -113,7 +113,7 @@ new_state()
         \":id\": \"${state_uuid}\",
         \"type\": \"${control_type}\",
         \"pin\": ${pin},
-        \"data\": ${data}
+        \"data\": \"${data}\"
     }" >> ${state_dir}/state.json
 
     state=`cat ${state_dir}/state.json`

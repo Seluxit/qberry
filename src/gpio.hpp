@@ -8,9 +8,9 @@ enum Direction { in, out };
 
 class Gpio
 {
-	private:
-		int number_; 
-		Direction direction_;
+    private:
+        int number_; 
+        Direction direction_;
 
         std::string export_path_ = "/sys/class/gpio/export";
         std::string unexport_path_ = "/sys/class/gpio/unexport";
@@ -20,15 +20,15 @@ class Gpio
         void set_direction(Direction dir);
         void set_edge(const std::string& edge);
 	public:
-		Gpio(int x, Direction dir); 
-		~Gpio();		
+        Gpio(int x, Direction dir); 
+        ~Gpio();		
 
-		std::string value();
-		bool value(const std::string& val);		
-    	std::string value_path();
+        std::string value();
+        bool value(const std::string& val);		
+        std::string value_path();
 
-		int number();
-		Direction direction();
+        int number();
+        Direction direction();
 
         void unexport_pin();
 };

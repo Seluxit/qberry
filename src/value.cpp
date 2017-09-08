@@ -32,9 +32,12 @@ namespace berry {
         
         value[":type"] = "urn:seluxit:xml:bastard:value-1.1";
         value[":id"] = this->id;
-        value["name"] = this->name;
         value["permission"] = this->permission;
-        value["type"] = this->type;
+        
+        if (!this->type.empty())
+            value["type"] = this->type;
+        if (!this->name.empty())
+            value["name"] = this->name;
 
         json number;
         number["min"] = std::to_string(this->min);
